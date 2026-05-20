@@ -401,6 +401,10 @@ public class DataxTask extends AbstractTask {
      */
     private String[] parsingSqlColumnNames(DbType sourceType, DbType targetType, BaseConnectionParam dataSourceCfg,
                                            String sql) {
+        Map<String, String> paramsMap = ParameterUtils.convert(taskRequest.getPrepareParamsMap());
+        sql = ParameterUtils.convertParameterPlaceholders(sql, paramsMap);
+
+        log.info("try grammatical parsing column name");
         String[] columnNames = tryGrammaticalAnalysisSqlColumnNames(sourceType, sql, dataSourceCfg.getCompatibleMode());
 
         if (columnNames == null || columnNames.length == 0) {
