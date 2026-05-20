@@ -47,6 +47,7 @@ task:
     - 'SEATUNNEL'
     - 'DATAX'
     - 'SQOOP'
+    - 'ADDAX'
   machineLearning:
     - 'JUPYTER'
     - 'MLFLOW'

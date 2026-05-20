@@ -135,6 +135,9 @@ $bgLight: #ffffff;
     &.icon-datax {
       background-image: url('/images/task-icons/datax.png');
     }
+    &.icon-addax {
+      background-image: url('/images/task-icons/addax.png');
+    }
     &.icon-sqoop {
       background-image: url('/images/task-icons/sqoop.png');
     }
@@ -244,6 +247,9 @@ $bgLight: #ffffff;
       }
       &.icon-datax {
         background-image: url('/images/task-icons/datax_hover.png');
+      }
+      &.icon-addax {
+        background-image: url('/images/task-icons/addax_hover.png');
       }
       &.icon-sqoop {
         background-image: url('/images/task-icons/sqoop_hover.png');
