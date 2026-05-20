@@ -147,6 +147,7 @@ export function useDataX(model: { [field: string]: any }): IJsonItem[] {
     }
   }
   const supportedDatasourceType = [
+    'DAMENG',
     'MYSQL',
     'POSTGRESQL',
     'ORACLE',

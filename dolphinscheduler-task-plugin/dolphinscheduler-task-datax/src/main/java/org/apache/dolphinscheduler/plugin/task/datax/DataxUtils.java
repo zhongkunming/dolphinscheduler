@@ -110,6 +110,7 @@ public class DataxUtils {
             case POSTGRESQL:
                 return new PGSQLStatementParser(sql);
             case ORACLE:
+            case DAMENG:
                 return new OracleStatementParser(sql);
             case SQLSERVER:
                 return new SQLServerStatementParser(sql);
