@@ -192,7 +192,7 @@ public class ParameterUtils {
             return sql;
         }
         StringBuilder ret = new StringBuilder(sql);
-        Matcher m = TaskConstants.SQL_PARAMS_PATTERN.matcher(sql);
+        Matcher m = TaskConstants.SQL_PARAMS_PATTERN_PARAM.matcher(sql);
         int index = 1;
         int paramsIndex = 1;
         // When matching with a regex, determine whether the corresponding property is a list.

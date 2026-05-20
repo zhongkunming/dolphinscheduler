@@ -22,12 +22,7 @@ import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.plugin.datasource.api.plugin.DataSourceClientProvider;
 import org.apache.dolphinscheduler.plugin.datasource.api.plugin.DataSourcePluginManager;
 import org.apache.dolphinscheduler.plugin.datasource.api.utils.DataSourceUtils;
-import org.apache.dolphinscheduler.plugin.task.api.AbstractTask;
-import org.apache.dolphinscheduler.plugin.task.api.SQLTaskExecutionContext;
-import org.apache.dolphinscheduler.plugin.task.api.TaskCallBack;
-import org.apache.dolphinscheduler.plugin.task.api.TaskConstants;
-import org.apache.dolphinscheduler.plugin.task.api.TaskException;
-import org.apache.dolphinscheduler.plugin.task.api.TaskExecutionContext;
+import org.apache.dolphinscheduler.plugin.task.api.*;
 import org.apache.dolphinscheduler.plugin.task.api.enums.Direct;
 import org.apache.dolphinscheduler.plugin.task.api.enums.SqlType;
 import org.apache.dolphinscheduler.plugin.task.api.enums.TaskTimeoutStrategy;
@@ -70,7 +65,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Slf4j
-public class SqlTask extends AbstractTask {
+public class SqlTask extends AbstractSqlTask {
 
     private final TaskExecutionContext taskExecutionContext;
 
@@ -449,10 +444,11 @@ public class SqlTask extends AbstractTask {
         StringBuilder sqlBuilder = new StringBuilder();
         // new
         // replace variable TIME with $[YYYYmmddd...] in sql when history run job and batch complement job
-        sql = ParameterUtils.replaceScheduleTime(sql,
-                DateUtils.timeStampToDate(taskExecutionContext.getScheduleTime()));
+//        sql = ParameterUtils.replaceScheduleTime(sql,
+//                DateUtils.timeStampToDate(taskExecutionContext.getScheduleTime()));
 
         Map<String, Property> paramsMap = taskExecutionContext.getPrepareParamsMap();
+        sql = ParameterUtils.convertParameterPlaceholders(sql, ParameterUtils.convert(paramsMap));
 
         Map<String, String> placeholderParamsMap = paramsMap == null
                 ? Collections.emptyMap()
@@ -473,14 +469,14 @@ public class SqlTask extends AbstractTask {
         // special characters need to be escaped, ${} needs to be escaped
         setSqlParamsMap(sql, sqlParamsMap, paramsMap, taskExecutionContext.getTaskInstanceId());
         // Replace the original value in sql ！{...} ，Does not participate in precompilation
-        String rgexo = "['\"]*\\!\\{(.*?)\\}['\"]*";
-        sql = replaceOriginalValue(sql, rgexo, paramsMap);
+//        String rgexo = "['\"]*\\!\\{(.*?)\\}['\"]*";
+//        sql = replaceOriginalValue(sql, rgexo, paramsMap);
         // replace the ${} of the SQL statement with the Placeholder
         // Convert the list parameter
         String formatSql = ParameterUtils.expandListParameter(sqlParamsMap, sql);
         sqlBuilder.append(formatSql);
         // print replace sql
-        printReplacedSql(sql, formatSql, TaskConstants.SQL_PARAMS_REGEX, sqlParamsMap);
+        printReplacedSql(formatSql, sqlParamsMap);
         return new SqlBinds(sqlBuilder.toString(), sqlParamsMap);
     }
 

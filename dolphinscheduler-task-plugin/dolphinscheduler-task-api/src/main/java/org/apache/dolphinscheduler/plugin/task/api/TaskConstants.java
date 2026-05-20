@@ -268,6 +268,11 @@ public class TaskConstants {
             String.format("['\"]\\$\\{(?<%s>.*?)}['\"]|\\$\\{(?<%s>.*?)}", GROUP_NAME1, GROUP_NAME2);
     public static final Pattern SQL_PARAMS_PATTERN = Pattern.compile(SQL_PARAMS_REGEX);
 
+    public static final String SQL_PARAMS_REGEX_PARAM =
+            String.format("\\!\\{(?<%s>[^}]*)}", GROUP_NAME1);
+    public static final Pattern SQL_PARAMS_PATTERN_PARAM = Pattern.compile(SQL_PARAMS_REGEX_PARAM);
+
+
     public static final String LOGIN_USER_KEY_TAB_USERNAME = "login.user.keytab.username";
 
     public static final String LOGIN_USER_KEY_TAB_PATH = "login.user.keytab.path";

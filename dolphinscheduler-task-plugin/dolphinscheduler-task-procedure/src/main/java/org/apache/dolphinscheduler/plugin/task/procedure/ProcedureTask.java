@@ -20,11 +20,13 @@ package org.apache.dolphinscheduler.plugin.task.procedure;
 import static org.apache.dolphinscheduler.plugin.task.api.TaskConstants.EXIT_CODE_FAILURE;
 import static org.apache.dolphinscheduler.plugin.task.api.TaskConstants.EXIT_CODE_SUCCESS;
 
+import com.google.common.collect.Maps;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.plugin.datasource.api.datasource.DataSourceProcessor;
 import org.apache.dolphinscheduler.plugin.datasource.api.plugin.DataSourceClientProvider;
 import org.apache.dolphinscheduler.plugin.datasource.api.plugin.DataSourcePluginManager;
-import org.apache.dolphinscheduler.plugin.task.api.AbstractTask;
+import org.apache.dolphinscheduler.plugin.task.api.AbstractSqlTask;
 import org.apache.dolphinscheduler.plugin.task.api.TaskCallBack;
 import org.apache.dolphinscheduler.plugin.task.api.TaskConstants;
 import org.apache.dolphinscheduler.plugin.task.api.TaskException;
@@ -38,7 +40,6 @@ import org.apache.dolphinscheduler.plugin.task.api.utils.ParameterUtils;
 import org.apache.dolphinscheduler.spi.datasource.ConnectionParam;
 import org.apache.dolphinscheduler.spi.enums.DbType;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.CallableStatement;
@@ -52,7 +53,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ProcedureTask extends AbstractTask {
+public class ProcedureTask extends AbstractSqlTask {
 
     private final ProcedureParameters procedureParameters;
 
@@ -99,14 +100,17 @@ public class ProcedureTask extends AbstractTask {
             Map<String, Property> prepareParams = taskExecutionContext.getPrepareParamsMap();
 
             // todo: rename to resolveSqlPlaceHolder and make it return placeHolderIndex map
-            setSqlParamsMap(procedureParameters.getMethod(), sqlPlaceHolders, prepareParams,
+            Map<String, String> convert = ParameterUtils.convert(prepareParams);
+            String sql = ParameterUtils.convertParameterPlaceholders(procedureParameters.getMethod(), convert);
+            setSqlParamsMap(sql, sqlPlaceHolders, prepareParams,
                     taskExecutionContext.getTaskInstanceId());
 
             // Replace the SQL statement's parameter placeholders with "?" for CallableStatement
             // Then will set the parameters through CallableStatement's setObject method
             // todo: maybe we can directly replace the parameter placeholders with the actual parameter values, don't
             // use ? here
-            String proceduerSql = procedureParameters.getMethod().replaceAll(TaskConstants.SQL_PARAMS_REGEX, "?");
+            String proceduerSql = ParameterUtils.expandListParameter(sqlPlaceHolders, sql);
+            printReplacedSql(proceduerSql, sqlPlaceHolders);
             // call method
             try (CallableStatement stat = connection.prepareCall(proceduerSql)) {
                 sessionStatement = stat;
