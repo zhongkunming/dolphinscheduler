@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.apache.dolphinscheduler.common.enums.ContextType;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
@@ -38,6 +39,7 @@ public class TaskInstanceContext {
 
     private Integer taskInstanceId;
 
+    @TableField(value = "\"context\"")
     private String context;
 
     private ContextType contextType;
