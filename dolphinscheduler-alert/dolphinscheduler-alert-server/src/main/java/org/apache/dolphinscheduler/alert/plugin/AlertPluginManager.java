@@ -24,8 +24,6 @@ import org.apache.dolphinscheduler.common.enums.PluginType;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.dao.PluginDao;
 import org.apache.dolphinscheduler.dao.entity.PluginDefine;
-import org.apache.dolphinscheduler.dao.plugin.api.dialect.DatabaseDialect;
-import org.apache.dolphinscheduler.dao.plugin.h2.dialect.H2Dialect;
 import org.apache.dolphinscheduler.spi.params.PluginParamsTransfer;
 import org.apache.dolphinscheduler.spi.params.base.ParamsOptions;
 import org.apache.dolphinscheduler.spi.params.base.PluginParams;
@@ -49,33 +47,20 @@ public final class AlertPluginManager {
 
     private final PluginDao pluginDao;
 
-    private final DatabaseDialect databaseDialect;
-
-    public AlertPluginManager(PluginDao pluginDao, DatabaseDialect databaseDialect) {
+    public AlertPluginManager(PluginDao pluginDao) {
         this.pluginDao = pluginDao;
-        this.databaseDialect = databaseDialect;
     }
 
     private final Map<Integer, AlertChannel> alertPluginMap = new HashMap<>();
 
     public void start() {
         log.info("AlertPluginManager start...");
-        checkAlertPluginExist();
         installAlertPlugin();
         log.info("AlertPluginManager started...");
     }
 
     public Optional<AlertChannel> getAlertChannel(int id) {
         return Optional.ofNullable(alertPluginMap.get(id));
-    }
-
-    private void checkAlertPluginExist() {
-        boolean exist = databaseDialect instanceof H2Dialect ?
-                pluginDao.checkPluginDefineTableExist() : databaseDialect.tableExists("t_ds_plugin_define");
-        if (!exist) {
-            log.error("Plugin Define Table t_ds_plugin_define Not Exist. Please Create it First!");
-            System.exit(1);
-        }
     }
 
     private void installAlertPlugin() {
